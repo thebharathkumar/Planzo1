@@ -2,43 +2,43 @@
 
 :root {
   --font-size: 16px;
-  --background: #f0faf4;
-  --foreground: #0b1a14;
+  --background: #fff8f4;
+  --foreground: #1a0a00;
   --card: #ffffff;
-  --card-foreground: #0b1a14;
+  --card-foreground: #1a0a00;
   --popover: #ffffff;
-  --popover-foreground: #0b1a14;
-  --primary: #10b981;
+  --popover-foreground: #1a0a00;
+  --primary: #f97316;
   --primary-foreground: #ffffff;
-  --secondary: #d1fae5;
-  --secondary-foreground: #065f46;
-  --muted: #d1fae5;
-  --muted-foreground: #6b7280;
-  --accent: #a7f3d0;
-  --accent-foreground: #065f46;
+  --secondary: #fef3c7;
+  --secondary-foreground: #92400e;
+  --muted: #fde8d8;
+  --muted-foreground: #78716c;
+  --accent: #8b5cf6;
+  --accent-foreground: #ffffff;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(16, 185, 129, 0.15);
+  --border: rgba(249, 115, 22, 0.15);
   --input: transparent;
-  --input-background: #ecfdf5;
-  --switch-background: #a7f3d0;
+  --input-background: #fff3ee;
+  --switch-background: #fed7aa;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #10b981;
-  --chart-1: #10b981;
-  --chart-2: #34d399;
-  --chart-3: #6ee7b7;
-  --chart-4: #a7f3d0;
-  --chart-5: #d1fae5;
+  --ring: #f97316;
+  --chart-1: #f97316;
+  --chart-2: #ef4444;
+  --chart-3: #8b5cf6;
+  --chart-4: #06b6d4;
+  --chart-5: #10b981;
   --radius: 0.75rem;
-  --sidebar: #ecfdf5;
-  --sidebar-foreground: #0b1a14;
-  --sidebar-primary: #10b981;
+  --sidebar: #fff3ee;
+  --sidebar-foreground: #1a0a00;
+  --sidebar-primary: #f97316;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #d1fae5;
-  --sidebar-accent-foreground: #065f46;
-  --sidebar-border: rgba(16, 185, 129, 0.2);
-  --sidebar-ring: #10b981;
+  --sidebar-accent: #fde8d8;
+  --sidebar-accent-foreground: #92400e;
+  --sidebar-border: rgba(249, 115, 22, 0.2);
+  --sidebar-ring: #f97316;
 }
 
 @theme inline {
@@ -70,25 +70,27 @@
   --color-chart-5: var(--chart-5);
   --font-primary: 'Inter', sans-serif;
 
-  /* Planzo Design Tokens — Mint Green Dark Theme */
-  --color-bg-base:       #0a0f0d;
-  --color-bg-surface:    #0f1a14;
-  --color-bg-raised:     #152018;
-  --color-bg-panel:      #111f17;
-  --color-bg-card:       #162118;
-  --color-mint:          #4ade80;
-  --color-mint-bright:   #22c55e;
-  --color-mint-glow:     rgba(74,222,128,0.18);
-  --color-mint-border:   rgba(74,222,128,0.25);
-  --color-mint-muted:    rgba(74,222,128,0.08);
-  --color-text-primary:  #f0fdf4;
-  --color-text-secondary:#a3e0b5;
-  --color-text-muted:    #5a7a65;
-  --color-input-border:  rgba(74,222,128,0.2);
-  --color-success:       #4ade80;
-  --color-warning:       #fbbf24;
-  --color-danger:        #f87171;
-  --color-info:          #60a5fa;
+  /* Planzo Design Tokens — Poppy Theme */
+  --color-bg-base: #fff8f4;
+  --color-bg-surface: #fff3ee;
+  --color-bg-raised: #ffffff;
+  --color-bg-panel: #fff0e8;
+  --color-bg-card: #ffffff;
+  --color-pop: #f97316;
+  --color-pop-bright: #ef4444;
+  --color-pop-glow: rgba(249, 115, 22, 0.15);
+  --color-pop-border: rgba(249, 115, 22, 0.25);
+  --color-pop-muted: rgba(249, 115, 22, 0.08);
+  --color-violet: #8b5cf6;
+  --color-violet-muted: rgba(139, 92, 246, 0.1);
+  --color-text-primary: #1a0a00;
+  --color-text-secondary: #92400e;
+  --color-text-muted: #78716c;
+  --color-input-border: rgba(249, 115, 22, 0.25);
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+  --color-info: #2563eb;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -104,17 +106,16 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Background aliases used by existing components */
   --color-background-900: var(--color-bg-base);
-  --color-surface-800:    var(--color-bg-surface);
-  --color-surface-700:    var(--color-bg-raised);
-  --color-panel:          var(--color-bg-panel);
-  --color-panel-variant:  var(--color-bg-card);
-  --color-muted-text:     var(--color-text-muted);
-  --color-accent-orange:  var(--color-mint);
-  --color-accent-orange-2:var(--color-mint-bright);
-  --color-success-green:  var(--color-mint);
-  --color-danger-red:     var(--color-danger);
+  --color-surface-800: var(--color-bg-surface);
+  --color-surface-700: var(--color-bg-raised);
+  --color-panel: var(--color-bg-panel);
+  --color-panel-variant: var(--color-bg-card);
+  --color-muted-text: var(--color-text-muted);
+  --color-accent-orange: var(--color-pop);
+  --color-accent-orange-2: var(--color-pop-bright);
+  --color-success-green: var(--color-success);
+  --color-danger-red: var(--color-danger);
 }
 
 @layer base {
@@ -127,6 +128,7 @@
     font-family: var(--font-primary);
     background-color: var(--color-bg-base);
     color: var(--color-text-primary);
+    color-scheme: light;
   }
 
   html {
@@ -138,31 +140,37 @@
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
+
   h2 {
     font-size: var(--text-xl);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
+
   h3 {
     font-size: var(--text-lg);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
+
   h4 {
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
+
   label {
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
+
   button {
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
     line-height: 1.5;
   }
+
   input {
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);

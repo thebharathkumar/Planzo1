@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router";
-import { ShoppingCart, Menu, X, Zap, LogOut } from "lucide-react";
+import { ShoppingCart, Menu, X, Zap, LogOut, UserPlus } from "lucide-react";
 import { useAuth, useCart } from "../store";
 
 const NAV_LINKS = [
@@ -161,14 +161,28 @@ export function Navbar() {
             </button>
           </div>
         ) : (
-          <Link to="/login">
-            <button
-              className="btn-pulse px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0"
-              style={{ background: "linear-gradient(135deg,#f97316,#ef4444)", color: "#fff", boxShadow: "0 3px 12px rgba(249,115,22,0.3)" }}
-            >
-              Sign In
-            </button>
-          </Link>
+          <div className="hidden md:flex items-center gap-2 anim-fade-in">
+            <Link to="/login">
+              <button
+                className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(249,115,22,0.3)",
+                  color: "#f97316",
+                }}
+              >
+                Sign In
+              </button>
+            </Link>
+            <Link to="/register">
+              <button
+                className="btn-pulse px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0"
+                style={{ background: "linear-gradient(135deg,#f97316,#ef4444)", color: "#fff", boxShadow: "0 3px 12px rgba(249,115,22,0.3)" }}
+              >
+                Sign Up
+              </button>
+            </Link>
+          </div>
         )}
 
         {/* Mobile hamburger */}
@@ -204,6 +218,26 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
+          {!currentUser && (
+            <div className="flex flex-col gap-2 mt-3 pt-3" style={{ borderTop: "1px solid rgba(249,115,22,0.12)" }}>
+              <Link
+                to="/login"
+                onClick={() => setOpen(false)}
+                className="w-full text-center py-2.5 rounded-xl text-sm font-semibold transition-all"
+                style={{ border: "1px solid rgba(249,115,22,0.3)", color: "#f97316", textDecoration: "none" }}
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                onClick={() => setOpen(false)}
+                className="w-full text-center py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-all"
+                style={{ background: "linear-gradient(135deg,#f97316,#ef4444)", color: "#fff", textDecoration: "none" }}
+              >
+                <UserPlus size={14} /> Sign Up
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </nav>

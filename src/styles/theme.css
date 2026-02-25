@@ -384,3 +384,75 @@
   box-shadow: 0 4px 32px rgba(249, 115, 22, 0.14) !important;
   background: rgba(255, 248, 244, 0.98) !important;
 }
+
+/* Glassmorphism card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(249, 115, 22, 0.12);
+  box-shadow: 0 8px 32px rgba(249, 115, 22, 0.08);
+}
+
+/* Parallax hover image */
+.parallax-img {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.parallax-img:hover {
+  transform: scale(1.08);
+}
+
+/* Section reveal — enhanced */
+.section-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.section-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children reveal */
+.stagger-child {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stagger-child.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Map marker pulse */
+@keyframes markerPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.5);
+  }
+
+  50% {
+    box-shadow: 0 0 0 12px rgba(249, 115, 22, 0);
+  }
+}
+
+.marker-pulse {
+  animation: markerPulse 2s ease-out infinite;
+}
+
+/* Leaflet popup overrides for Planzo theme */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.15) !important;
+  border: 1px solid rgba(249, 115, 22, 0.15) !important;
+}
+
+.leaflet-popup-tip {
+  box-shadow: none !important;
+}

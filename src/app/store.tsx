@@ -1,11 +1,18 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { User, MOCK_USERS } from "./mock-data";
+import type { Role } from "./mock-data";
 
 // ─── Auth Context ─────────────────────────────────────────────────────────
+
+interface RegisterResult {
+    success: boolean;
+    error?: string;
+}
 
 interface AuthContextType {
     currentUser: User | null;
     login: (email: string, password: string, role?: string) => boolean;
+    register: (name: string, email: string, password: string, role: Role) => RegisterResult;
     logout: () => void;
     isAuthenticated: boolean;
 }
@@ -36,11 +43,12 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 // ─── Providers ────────────────────────────────────────────────────────────
 
 export function AppProvider({ children }: { children: ReactNode }) {
+    const [users, setUsers] = useState<User[]>([...MOCK_USERS]);
     const [currentUser, setCurrentUser] = useState<User | null>(MOCK_USERS[0]);
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
     const login = (email: string, _password: string, role?: string) => {
-        const user = MOCK_USERS.find(
+        const user = users.find(
             (u) => u.email === email || (role && u.role === role)
         );
         if (user) {
@@ -48,6 +56,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
             return true;
         }
         return false;
+    };
+
+    const register = (name: string, email: string, _password: string, role: Role): RegisterResult => {
+        const exists = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+        if (exists) return { success: false, error: "An account with this email already exists." };
+
+        const newUser: User = {
+            id: `u${Date.now()}`,
+            name,
+            email,
+            role,
+            avatar: name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2),
+            verified: false,
+        };
+        setUsers((prev) => [...prev, newUser]);
+        setCurrentUser(newUser);
+        return { success: true };
     };
 
     const logout = () => setCurrentUser(null);
@@ -72,7 +97,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const total = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
     return (
-        <AuthContext.Provider value={{ currentUser, login, logout, isAuthenticated: !!currentUser }}>
+        <AuthContext.Provider value={{ currentUser, login, register, logout, isAuthenticated: !!currentUser }}>
             <CartContext.Provider value={{ items: cartItems, addItem, removeItem, clearCart, total }}>
                 {children}
             </CartContext.Provider>

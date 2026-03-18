@@ -25,7 +25,7 @@ export function MyTickets() {
     const [refundLoading, setRefundLoading] = useState(false);
 
     const upcoming = MOCK_BOOKINGS.filter((b) => b.status !== "cancelled" && !cancelled.includes(b.id));
-    const past: typeof MOCK_BOOKINGS = [];
+    const past = MOCK_BOOKINGS.filter((b) => !upcoming.includes(b));
     const visibleBookings = tab === "upcoming" ? upcoming : past;
 
     const openModal = (type: ModalType, booking: Booking) => {

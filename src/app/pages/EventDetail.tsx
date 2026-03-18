@@ -33,10 +33,22 @@ export function EventDetail() {
     const navigate = useNavigate();
     const { addItem } = useCart();
     const { events: allEvents } = useEvents();
-    const event = allEvents.find((e) => e.id === id) || MOCK_EVENTS[0];
+    const event = allEvents.find((e) => e.id === id);
     const [quantities, setQuantities] = useState<Record<string, number>>({});
     const [added, setAdded] = useState(false);
     const [liked, setLiked] = useState(false);
+
+    if (!event) {
+        return (
+            <div style={{ paddingTop: 100, minHeight: "100vh", background: "var(--color-bg-base)", textAlign: "center" }}>
+                <h1 className="text-3xl font-bold" style={{ color: "#1a0a00" }}>Event Not Found</h1>
+                <p className="mt-4" style={{ color: "#78716c" }}>The event you are looking for does not exist or has been deleted.</p>
+                <button onClick={() => navigate("/")} className="mt-6 px-6 py-2.5 rounded-xl text-sm font-bold" style={{ background: "#f97316", color: "#fff" }}>
+                    Back to Discovery
+                </button>
+            </div>
+        );
+    }
 
     // Use lat/lng from event data
     const coords: [number, number] = [event.lat, event.lng];
@@ -57,7 +69,7 @@ export function EventDetail() {
     const handleAddToCart = () => {
         event.tiers.forEach((t) => {
             if (quantities[t.name] > 0) {
-                addItem({ eventId: event.id, eventTitle: event.title, tier: t.name, price: t.price, quantity: quantities[t.name], image: event.image });
+                addItem({ eventId: event.id, eventTitle: event.title, tierId: t.id, tierName: t.name, price: t.price, quantity: quantities[t.name] } as any);
             }
         });
         setAdded(true);

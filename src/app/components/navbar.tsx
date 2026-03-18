@@ -4,13 +4,14 @@ import { ShoppingCart, Menu, X, Zap, LogOut, UserPlus, UserCircle } from "lucide
 import { useAuth, useCart } from "../store";
 
 const NAV_LINKS = [
-  { label: "Discover", path: "/", roles: ["attendee", "organizer", "admin", "finance", "marketing"] },
+  { label: "Discover", path: "/", roles: ["attendee", "organizer", "admin", "finance", "marketing"], public: true },
   { label: "My Tickets", path: "/my-tickets", roles: ["attendee", "organizer", "admin", "finance", "marketing"] },
+  { label: "Globe", path: "/globe", roles: ["attendee", "organizer", "admin", "finance", "marketing"], public: true },
   { label: "Organize", path: "/organizer", roles: ["organizer", "admin"] },
   { label: "Analytics", path: "/analytics", roles: ["admin", "organizer"] },
   { label: "Finance", path: "/admin", roles: ["admin", "finance"] },
   { label: "Marketing", path: "/marketing", roles: ["admin", "marketing"] },
-  { label: "Support", path: "/support", roles: ["attendee", "organizer", "admin", "finance", "marketing"] },
+  { label: "Support", path: "/support", roles: ["attendee", "organizer", "admin", "finance", "marketing"], public: true },
 ];
 
 export function Navbar() {
@@ -36,7 +37,7 @@ export function Navbar() {
   }, []);
 
   const visibleLinks = NAV_LINKS.filter(
-    (l) => !currentUser || l.roles.includes(currentUser.role)
+    (l) => currentUser ? l.roles.includes(currentUser.role) : (l as any).public
   );
   const cartCount = items.reduce((s, i) => s + i.quantity, 0);
 

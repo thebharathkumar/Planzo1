@@ -9,6 +9,7 @@ export interface User {
   role: Role;
   avatar: string;
   verified: boolean;
+  password?: string;
 }
 
 export interface TicketTier {
@@ -41,7 +42,7 @@ export interface Event {
   rating: number;
   reviewCount: number;
   featured: boolean;
-  status: "upcoming" | "ongoing" | "completed" | "cancelled";
+  status: "upcoming" | "ongoing" | "completed" | "cancelled" | "draft";
 }
 
 export interface Booking {
@@ -94,11 +95,11 @@ export interface Campaign {
 // ─── Users ───────────────────────────────────────────────────────────────
 
 export const MOCK_USERS: User[] = [
-  { id: "u1", name: "Alex Rivera", email: "alex@planzo.io", role: "attendee", avatar: "AR", verified: true },
-  { id: "u2", name: "Sam Chen", email: "sam@planzo.io", role: "organizer", avatar: "SC", verified: true },
-  { id: "u3", name: "Jordan Blake", email: "jordan@planzo.io", role: "admin", avatar: "JB", verified: true },
-  { id: "u4", name: "Taylor Kim", email: "taylor@planzo.io", role: "finance", avatar: "TK", verified: true },
-  { id: "u5", name: "Morgan Lee", email: "morgan@planzo.io", role: "marketing", avatar: "ML", verified: true },
+  { id: "u1", name: "Alex Rivera", email: "alex@planzo.io", role: "attendee", avatar: "AR", verified: true, password: "password123" },
+  { id: "u2", name: "Sam Chen", email: "sam@planzo.io", role: "organizer", avatar: "SC", verified: true, password: "password123" },
+  { id: "u3", name: "Jordan Blake", email: "jordan@planzo.io", role: "admin", avatar: "JB", verified: true, password: "password123" },
+  { id: "u4", name: "Taylor Kim", email: "taylor@planzo.io", role: "finance", avatar: "TK", verified: true, password: "password123" },
+  { id: "u5", name: "Morgan Lee", email: "morgan@planzo.io", role: "marketing", avatar: "ML", verified: true, password: "password123" },
 ];
 
 // ─── Events ──────────────────────────────────────────────────────────────

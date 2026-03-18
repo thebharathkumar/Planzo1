@@ -5,6 +5,7 @@ import {
     ChevronRight, ArrowRight, Users, Calendar, TrendingUp, Music,
     Cpu, UtensilsCrossed, Palette, Heart, Dumbbell, Navigation,
 } from "lucide-react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -336,8 +337,51 @@ export function EventDiscovery() {
         return () => window.removeEventListener("scroll", handler);
     }, []);
 
+    // Thermal Scroll Animation
+    const { scrollYProgress } = useScroll();
+    const thermalY1 = useTransform(scrollYProgress, [0, 1], ["0vh", "80vh"]);
+    const thermalY2 = useTransform(scrollYProgress, [0, 1], ["20vh", "-60vh"]);
+    const thermalScale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.5, 1.2]);
+    const thermalOpacity = useTransform(scrollYProgress, [0, 0.1, 1], [0, 0.8, 0.9]);
+
     return (
-        <div style={{ paddingTop: 68 }}>
+        <div style={{ paddingTop: 68, position: "relative", zIndex: 0 }}>
+            {/* Thermal Background Layer */}
+            <motion.div 
+                className="fixed inset-0 pointer-events-none"
+                style={{ opacity: thermalOpacity, zIndex: -1 }}
+            >
+                <motion.div 
+                    className="absolute rounded-full blur-[100px]"
+                    style={{
+                        width: "50vw", height: "50vw", maxWidth: 800, maxHeight: 800,
+                        top: "-10%", left: "-10%",
+                        background: "rgba(249,115,22,0.18)", // Orange thermal
+                        y: thermalY1, scale: thermalScale,
+                        mixBlendMode: "multiply"
+                    }}
+                />
+                <motion.div 
+                    className="absolute rounded-full blur-[120px]"
+                    style={{
+                        width: "60vw", height: "60vw", maxWidth: 1000, maxHeight: 1000,
+                        bottom: "-20%", right: "-10%",
+                        background: "rgba(239,68,68,0.14)", // Red thermal
+                        y: thermalY2, scale: thermalScale,
+                        mixBlendMode: "multiply"
+                    }}
+                />
+                <motion.div 
+                    className="absolute rounded-full blur-[80px]"
+                    style={{
+                        width: "40vw", height: "40vw", maxWidth: 600, maxHeight: 600,
+                        top: "30%", left: "40%",
+                        background: "rgba(251,191,36,0.12)", // Yellow thermal
+                        y: thermalY1, scale: thermalScale,
+                        mixBlendMode: "multiply"
+                    }}
+                />
+            </motion.div>
 
             {/* ═══════════════════════════════════════════════════════════════ */}
             {/* SECTION 1: Cinematic Hero                                     */}

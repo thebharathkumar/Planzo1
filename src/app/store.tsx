@@ -61,7 +61,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     const login = (email: string, _password: string, role?: string) => {
         const user = users.find(
-            (u) => u.email === email || (role && u.role === role)
+            (u) => (u.email === email || (role && u.role === role)) && (!u.password || u.password === _password)
         );
         if (user) {
             setCurrentUser(user);

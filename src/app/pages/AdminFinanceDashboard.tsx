@@ -87,7 +87,7 @@ export function AdminFinanceDashboard() {
         setExportNotice(null);
         const headerValue = encodeUserHeader(currentUser as any);
         try {
-            const res = await fetch(`/api/reports/financial/export?id=${encodeURIComponent(report.id)}&format=${format}`, {
+            const res = await fetch(`/api/reports/financial?id=${encodeURIComponent(report.id)}&format=${format}`, {
                 headers: headerValue ? { "x-planzo-user": headerValue } : undefined,
             });
             if (res.status === 202) {

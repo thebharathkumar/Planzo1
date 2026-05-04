@@ -46,7 +46,7 @@ export function EventDetail() {
             method: "POST",
             body: JSON.stringify({ type: "view", eventId: id }),
         }).catch(() => {});
-        apiFetch<typeof reviewsData>(`/api/reviews/event?eventId=${encodeURIComponent(id)}`)
+        apiFetch<typeof reviewsData>(`/api/reviews?eventId=${encodeURIComponent(id)}`)
             .then((r) => {
                 if (r.ok && r.data) setReviewsData(r.data);
             });

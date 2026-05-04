@@ -1,14 +1,16 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router";
-import { Ticket, Clock, MapPin, Star, QrCode, X, Check, Download, RefreshCw } from "lucide-react";
+import { Ticket, Clock, MapPin, Star, QrCode, X, Check, Download, RefreshCw, AlertCircle } from "lucide-react";
 import { MOCK_BOOKINGS, Booking } from "../mock-data";
-import { useTickets } from "../store";
+import { useAuth, useTickets } from "../store";
 import type { IssuedTicket } from "../lib/tickets";
+import { apiFetch } from "../lib/api";
 
 type ModalType = "cancel" | "rate" | "refund" | "qr" | null;
 
 export function MyTickets() {
     const { tickets } = useTickets();
+    const { currentUser } = useAuth();
     const [tab, setTab] = useState<"upcoming" | "past">("upcoming");
     const [cancelled, setCancelled] = useState<string[]>([]);
     const [cancellingId, setCancellingId] = useState<string | null>(null);
@@ -62,6 +64,8 @@ export function MyTickets() {
     const [ratingHover, setRatingHover] = useState(0);
     const [review, setReview] = useState("");
     const [ratingSubmitted, setRatingSubmitted] = useState<string[]>([]);
+    const [ratingSubmitting, setRatingSubmitting] = useState(false);
+    const [ratingError, setRatingError] = useState<string | null>(null);
 
     // Refund
     const [refundReason, setRefundReason] = useState("Unable to attend");
@@ -81,6 +85,7 @@ export function MyTickets() {
         setReview("");
         setRefundNote("");
         setRefundReason("Unable to attend");
+        setRatingError(null);
     };
 
     const closeModal = () => {
@@ -98,12 +103,27 @@ export function MyTickets() {
         }, 800);
     };
 
-    const handleRatingSubmit = (e: React.FormEvent) => {
+    const handleRatingSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (selectedBooking) {
-            setRatingSubmitted(prev => [...prev, selectedBooking.id]);
-            setTimeout(closeModal, 1200);
+        if (!selectedBooking) return;
+        setRatingError(null);
+        setRatingSubmitting(true);
+        const result = await apiFetch("/api/reviews", {
+            method: "POST",
+            user: currentUser,
+            body: JSON.stringify({
+                bookingId: selectedBooking.id,
+                rating,
+                text: review,
+            }),
+        });
+        setRatingSubmitting(false);
+        if (!result.ok) {
+            setRatingError(result.error || "Could not submit review");
+            return;
         }
+        setRatingSubmitted(prev => [...prev, selectedBooking.id]);
+        setTimeout(closeModal, 1000);
     };
 
     const handleRefundSubmit = (e: React.FormEvent) => {
@@ -324,14 +344,21 @@ export function MyTickets() {
                                     <p className="text-xs" style={{ color: "#78716c" }}>{rating === 0 ? "Select a rating" : ["", "Poor", "Fair", "Good", "Great", "Excellent!"][rating]}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium mb-1.5" style={{ color: "#92400e" }}>Your Review (optional)</label>
-                                    <textarea rows={3} value={review} onChange={(e) => setReview(e.target.value)} placeholder="Tell us about your experience..."
+                                    <label className="block text-xs font-medium mb-1.5" style={{ color: "#92400e" }}>Your Review</label>
+                                    <textarea rows={3} required maxLength={1000} value={review} onChange={(e) => setReview(e.target.value)} placeholder="Tell us about your experience..."
                                         className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
                                         style={{ background: "var(--color-bg-raised)", border: "1px solid rgba(249,115,22,0.2)", color: "#1a0a00" }} />
+                                    <p className="text-[10px] mt-1" style={{ color: review.length > 950 ? "#dc2626" : "#78716c" }}>{review.length}/1000</p>
                                 </div>
-                                <button type="submit" disabled={rating === 0} className="w-full py-3 rounded-xl font-bold text-sm transition-all"
-                                    style={{ background: rating > 0 ? "linear-gradient(135deg,#f97316,#ef4444)" : "rgba(249,115,22,0.2)", color: "#fff", opacity: rating === 0 ? 0.6 : 1 }}>
-                                    <Star size={14} className="inline mr-2" />Submit Rating
+                                {ratingError && (
+                                    <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.3)" }}>
+                                        <AlertCircle size={14} style={{ color: "#ef4444", flexShrink: 0, marginTop: 2 }} />
+                                        <p className="text-xs" style={{ color: "#991b1b" }}>{ratingError}</p>
+                                    </div>
+                                )}
+                                <button type="submit" disabled={rating === 0 || ratingSubmitting || !review.trim()} className="w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2"
+                                    style={{ background: rating > 0 && review.trim() ? "linear-gradient(135deg,#f97316,#ef4444)" : "rgba(249,115,22,0.2)", color: "#fff", opacity: rating === 0 || !review.trim() ? 0.6 : 1 }}>
+                                    {ratingSubmitting ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><Star size={14} /> Submit Rating</>}
                                 </button>
                             </form>
                         </div>

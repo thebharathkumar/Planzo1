@@ -8,7 +8,24 @@ import { MOCK_BOOKINGS } from "../mock-data";
 import { useEvents, useAuth, useTickets } from "../store";
 import { verifyTicketPayload } from "../lib/tickets";
 import { QrScanner } from "../components/qr-scanner";
+import { useApiWithStale } from "../lib/useApiWithStale";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+
+interface DashboardKpis {
+    scope: "organizer" | "platform";
+    kpis: {
+        sales: number;
+        revenue: number;
+        cancellations: number;
+        engagement: number;
+        commission: number;
+        netPayout: number;
+        avgRating: number;
+        ratingCount: number;
+    };
+    activeEvents: number;
+    fetchedAt: string;
+}
 
 const revenueData = [
     { month: "Jan", revenue: 12400 }, { month: "Feb", revenue: 18700 },
@@ -105,11 +122,14 @@ export function OrganizerDashboard() {
         resetVerify();
     };
 
+    const dashboardApi = useApiWithStale<DashboardKpis>("dashboard:organizer", "/api/dashboard/organizer");
+    const performanceApi = useApiWithStale<{ rows: Array<{ eventId: string; title: string; views: number; clicks: number; ticketsSold: number; revenue: number; refunds: number; conversionRate: number }>; fetchedAt: string }>("event-performance", "/api/analytics/event-performance");
+    const formatCurrency = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
     const stats = [
-        { label: "Active Events", value: events.filter(e => e.status !== "draft").length, icon: Calendar, color: "#f97316" },
-        { label: "Total Attendees", value: "4,280", icon: Users, color: "#2563eb" },
-        { label: "Revenue (MTD)", value: "$62,300", icon: DollarSign, color: "#d97706" },
-        { label: "Avg. Rating", value: "4.8 ★", icon: BarChart2, color: "#7c3aed" },
+        { label: "Active Events", value: dashboardApi.data?.activeEvents ?? events.filter(e => e.status !== "draft").length, icon: Calendar, color: "#f97316" },
+        { label: dashboardApi.data?.scope === "platform" ? "Tickets Sold (Platform)" : "Tickets Sold", value: dashboardApi.data?.kpis.sales ?? "—", icon: Users, color: "#2563eb" },
+        { label: "Gross Revenue", value: dashboardApi.data ? formatCurrency(dashboardApi.data.kpis.revenue) : "—", icon: DollarSign, color: "#d97706" },
+        { label: "Avg. Rating", value: dashboardApi.data ? (dashboardApi.data.kpis.ratingCount > 0 ? `${dashboardApi.data.kpis.avgRating.toFixed(1)} ★` : "No ratings") : "—", icon: BarChart2, color: "#7c3aed" },
     ];
 
     const handleCreate = (e: React.FormEvent) => {
@@ -212,6 +232,11 @@ export function OrganizerDashboard() {
                 </div>
 
                 {/* Stats */}
+                {dashboardApi.isStale && dashboardApi.lastLoadedAt && (
+                    <div className="mb-3 px-3 py-2 rounded-lg text-xs flex items-center gap-2" style={{ background: "rgba(251,191,36,0.12)", border: "1px solid rgba(251,191,36,0.3)", color: "#92400e" }}>
+                        <AlertTriangle size={12} /> Showing last-loaded data from {new Date(dashboardApi.lastLoadedAt).toLocaleString()} — analytics service unavailable.
+                    </div>
+                )}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     {stats.map(({ label, value, icon: Icon, color }) => (
                         <div key={label} className="p-5 rounded-2xl" style={{ background: "var(--color-bg-card)", border: "1px solid rgba(249,115,22,0.08)" }}>
@@ -281,6 +306,46 @@ export function OrganizerDashboard() {
                                     })}
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Event Performance (3.10) */}
+                        <div className="mt-8">
+                            <div className="flex items-center justify-between mb-3">
+                                <h2 className="text-base font-bold" style={{ color: "#1a0a00", fontFamily: "'Outfit',sans-serif" }}>Event Performance</h2>
+                                {performanceApi.isStale && performanceApi.lastLoadedAt && (
+                                    <span className="text-[10px]" style={{ color: "#92400e" }}>Stale · loaded {new Date(performanceApi.lastLoadedAt).toLocaleTimeString()}</span>
+                                )}
+                            </div>
+                            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--color-bg-card)", border: "1px solid rgba(249,115,22,0.08)" }}>
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr style={{ borderBottom: "1px solid rgba(249,115,22,0.08)" }}>
+                                            {["Event", "Views", "Clicks", "Sold", "Refunds", "Conv. Rate", "Revenue"].map((h) => (
+                                                <th key={h} className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide" style={{ color: "#78716c" }}>{h}</th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-[rgba(249,115,22,0.04)]">
+                                        {(performanceApi.data?.rows ?? []).map((r) => (
+                                            <tr key={r.eventId}>
+                                                <td className="px-4 py-3"><p className="text-xs font-medium line-clamp-1" style={{ color: "#1a0a00" }}>{r.title}</p></td>
+                                                <td className="px-4 py-3 text-xs" style={{ color: "#78716c" }}>{r.views.toLocaleString()}</td>
+                                                <td className="px-4 py-3 text-xs" style={{ color: "#78716c" }}>{r.clicks.toLocaleString()}</td>
+                                                <td className="px-4 py-3 text-xs" style={{ color: "#78716c" }}>{r.ticketsSold.toLocaleString()}</td>
+                                                <td className="px-4 py-3 text-xs" style={{ color: "#dc2626" }}>{r.refunds.toLocaleString()}</td>
+                                                <td className="px-4 py-3 text-xs" style={{ color: "#f97316" }}>{(r.conversionRate * 100).toFixed(1)}%</td>
+                                                <td className="px-4 py-3 text-xs font-bold" style={{ color: "#f97316" }}>${r.revenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td>
+                                            </tr>
+                                        ))}
+                                        {!performanceApi.data && performanceApi.isLoading && (
+                                            <tr><td colSpan={7} className="px-4 py-6 text-center text-xs" style={{ color: "#78716c" }}>Loading…</td></tr>
+                                        )}
+                                        {performanceApi.data && performanceApi.data.rows.length === 0 && (
+                                            <tr><td colSpan={7} className="px-4 py-6 text-center text-xs" style={{ color: "#78716c" }}>No events to display.</td></tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 

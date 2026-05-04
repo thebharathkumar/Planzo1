@@ -1,6 +1,6 @@
 // ─── Planzo Mock Data ────────────────────────────────────────────────────
 
-export type Role = "attendee" | "organizer" | "admin" | "finance" | "marketing";
+export type Role = "attendee" | "organizer" | "admin" | "finance" | "marketing" | "sales" | "accountant";
 
 export interface User {
   id: string;

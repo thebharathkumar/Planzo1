@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import { useAuth, useCart, useEvents, useTickets } from "../store";
 import { buildTicketPayload, IssuedTicket, newId, renderQrDataUrl } from "../lib/tickets";
+import { apiFetch } from "../lib/api";
 import { PENDING_CHECKOUT_KEY } from "./Checkout";
 
 interface PendingCheckout {
@@ -92,6 +93,37 @@ export function CheckoutSuccess() {
             if (cancelled) return;
             addTickets(newTickets);
             setIssued(newTickets);
+
+            // Persist booking to Redis so analytics can pick it up.
+            // Group tickets by event so each booking record holds the full quantity.
+            const byEvent = new Map<string, IssuedTicket[]>();
+            for (const t of newTickets) {
+                const list = byEvent.get(t.eventId) ?? [];
+                list.push(t);
+                byEvent.set(t.eventId, list);
+            }
+            await Promise.all(
+                Array.from(byEvent.values()).map((group) => {
+                    const head = group[0];
+                    return apiFetch("/api/bookings/record", {
+                        method: "POST",
+                        user: currentUser,
+                        body: JSON.stringify({
+                            bookingId: head.bookingId,
+                            eventId: head.eventId,
+                            eventTitle: head.eventTitle,
+                            eventDate: head.eventDate,
+                            eventVenue: head.eventVenue,
+                            tierId: head.tierId,
+                            tierName: head.tierName,
+                            quantity: group.length,
+                            total: group.reduce((s, t) => s + t.price, 0),
+                            stripeSessionId: head.stripeSessionId,
+                        }),
+                    }).catch(() => null);
+                })
+            );
+
             window.localStorage.removeItem(PENDING_CHECKOUT_KEY);
             clearCart();
             setLoading(false);

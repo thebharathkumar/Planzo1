@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { MapPin, Calendar, Star, Share2, Heart, ShoppingCart, Clock, ChevronLeft, Plus, Minus, ExternalLink, Ticket } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -7,6 +7,7 @@ import L from "leaflet";
 import { MOCK_EVENTS } from "../mock-data";
 import { useEvents } from "../store";
 import { useCart } from "../store";
+import { apiFetch } from "../lib/api";
 
 // Fix leaflet default marker icons for Vite builds
 const defaultIcon = new L.Icon({
@@ -37,6 +38,19 @@ export function EventDetail() {
     const [quantities, setQuantities] = useState<Record<string, number>>({});
     const [added, setAdded] = useState(false);
     const [liked, setLiked] = useState(false);
+    const [reviewsData, setReviewsData] = useState<{ aggregate: { avg: number; count: number }; reviews: Array<{ id: string; userName: string; rating: number; text: string; createdAt: string }> } | null>(null);
+
+    useEffect(() => {
+        if (!id) return;
+        apiFetch("/api/track", {
+            method: "POST",
+            body: JSON.stringify({ type: "view", eventId: id }),
+        }).catch(() => {});
+        apiFetch<typeof reviewsData>(`/api/reviews/event?eventId=${encodeURIComponent(id)}`)
+            .then((r) => {
+                if (r.ok && r.data) setReviewsData(r.data);
+            });
+    }, [id]);
 
     if (!event) {
         return (
@@ -108,7 +122,7 @@ export function EventDetail() {
                         <span className="flex items-center gap-1.5"><Calendar size={14} /> {event.date}</span>
                         <span className="flex items-center gap-1.5"><Clock size={14} /> {event.time}</span>
                         <span className="flex items-center gap-1.5"><MapPin size={14} /> {event.venue}, {event.city}</span>
-                        <span className="flex items-center gap-1.5"><Star size={13} style={{ color: "#f97316" }} /> {event.rating} ({event.reviewCount} reviews)</span>
+                        <span className="flex items-center gap-1.5"><Star size={13} style={{ color: "#f97316" }} /> {(reviewsData?.aggregate.count ?? 0) > 0 ? reviewsData!.aggregate.avg.toFixed(1) : event.rating} ({(reviewsData?.aggregate.count ?? 0) > 0 ? reviewsData!.aggregate.count : event.reviewCount} reviews)</span>
                     </div>
                 </div>
             </div>

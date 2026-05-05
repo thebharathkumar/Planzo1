@@ -1,5 +1,5 @@
 import { getRedis } from "./redis";
-import { MOCK_EVENTS, MOCK_BOOKINGS, MOCK_CAMPAIGNS, MOCK_REVENUE, MOCK_ANALYTICS } from "../../src/app/mock-data";
+import { MOCK_EVENTS, MOCK_BOOKINGS, MOCK_CAMPAIGNS, MOCK_REVENUE, MOCK_ANALYTICS } from "./seed-data";
 
 const SEED_MARKER = "planzo:seed:v1";
 

@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getRedis } from "./_lib/redis";
-import { handle, bad } from "./_lib/respond";
-import { ensureSeed } from "./_lib/seed";
+import { getRedis } from "./_lib/redis.js";
+import { handle, bad } from "./_lib/respond.js";
+import { ensureSeed } from "./_lib/seed.js";
 
 interface TrackBody {
     type: "view" | "click";

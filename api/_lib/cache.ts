@@ -1,4 +1,4 @@
-import { getRedis } from "./redis";
+import { getRedis } from "./redis.js";
 
 export async function cached<T>(key: string, ttlSec: number, fn: () => Promise<T>): Promise<T> {
     const redis = getRedis();

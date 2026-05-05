@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getRedis } from "../_lib/redis";
-import { handle, bad } from "../_lib/respond";
-import { requireUser } from "../_lib/auth";
-import { ensureSeed } from "../_lib/seed";
+import { getRedis } from "../_lib/redis.js";
+import { handle, bad } from "../_lib/respond.js";
+import { requireUser } from "../_lib/auth.js";
+import { ensureSeed } from "../_lib/seed.js";
 
 interface BookingRecord {
     bookingId: string;
